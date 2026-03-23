@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Milano Club | Elite Digital Experience</title>
+    
+    <!-- External Resources -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Montserrat:wght@100;300;400;600;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --gold: #c2a35d;
+            --gold-light: #e0ca96;
+            --dark: #050505;
+            --darker: #000000;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(194, 163, 93, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--darker);
+            color: #ffffff;
+            font-family: 'Montserrat', sans-serif;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .milano-font { font-family: 'Cinzel', serif; }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: var(--darker); }
+        ::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 10px; }
+
+        /* Premium Background Elements */
+        .bg-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at 50% 50%, #111111 0%, #000000 100%);
+            z-index: -3;
+        }
+
+        .aurora-container {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            overflow: hidden; z-index: -2; pointer-events: none;
+        }
+
+        .aurora-sphere {
+            position: absolute; width: 50vw; height: 50vw;
+            background: radial-gradient(circle, rgba(194, 163, 93, 0.08) 0%, transparent 70%);
+            border-radius: 50%; filter: blur(100px);
+            animation: aurora-float 20s infinite alternate ease-in-out;
+        }
+
+        @keyframes aurora-float {
+            0% { transform: translate(-20%, -20%) scale(1); }
+            100% { transform: translate(30%, 30%) scale(1.2); }
+        }
+
+        /* Splash Screen */
+        #splash-screen {
+            position: fixed; inset: 0; background: var(--darker);
+            z-index: 9999; display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            transition: opacity 1s ease-out, visibility 1s;
+        }
+
+        .loader-logo {
+            font-size: 3rem; letter-spacing: 1rem; color: var(--gold);
+            animation: pulse-gold 2s infinite;
+        }
+
+        @keyframes pulse-gold {
+            0%, 100% { opacity: 0.5; transform: scale(0.98); }
+            50% { opacity: 1; transform: scale(1); text-shadow: 0 0 20px var(--gold); }
+        }
+
+        /* Glass Cards */
+        .glass-card {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 2rem;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass-card:hover {
+            border-color: var(--gold);
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        /* Navigation Links */
+        .nav-link {
+            position: relative; padding: 10px 20px;
+            color: rgba(255,255,255,0.4); text-transform: uppercase;
+            font-size: 0.75rem; font-weight: 700; letter-spacing: 2px;
+            transition: all 0.3s; white-space: nowrap;
+        }
+
+        .nav-link.active { color: var(--gold); transform: scale(1.1); }
+        .nav-link.active::after {
+            content: ''; position: absolute; bottom: 0; left: 50%;
+            transform: translateX(-50%); width: 20px; height: 2px;
+            background: var(--gold); box-shadow: 0 0 10px var(--gold);
+        }
+
+        /* Product Image Container */
+        .img-container {
+            width: 100%; height: 240px; border-radius: 1.5rem;
+            overflow: hidden; position: relative;
+        }
+
+        .img-container img {
+            width: 100%; height: 100%; object-fit: cover;
+            transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .glass-card:hover .img-container img { transform: scale(1.1); }
+
+        /* Cart Panel Style */
+        #cart-panel {
+            position: fixed; bottom: 0; left: 50%; transform: translateX(-50%) translateY(100%);
+            width: 100%; max-width: 600px; height: 85vh;
+            background: rgba(10, 10, 10, 0.98); backdrop-filter: blur(30px);
+            border-top: 2px solid var(--gold); border-radius: 3rem 3rem 0 0;
+            z-index: 2000; transition: transform 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+
+        #cart-panel.open { transform: translateX(-50%) translateY(0); }
+
+        /* Price Tag */
+        .price-tag {
+            background: linear-gradient(90deg, var(--gold) 0%, var(--gold-light) 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            font-weight: 900;
+        }
+
+        /* Buttons */
+        .btn-gold {
+            background: linear-gradient(135deg, #c2a35d 0%, #8a6d29 100%);
+            color: #000; font-weight: 800; text-transform: uppercase;
+            letter-spacing: 2px; transition: all 0.3s;
+        }
+
+        .btn-gold:hover { transform: scale(1.02); box-shadow: 0 10px 25px rgba(194,163,93,0.3); }
+        .btn-gold:active { transform: scale(0.97); }
+
+        /* Responsive Grid Tweak */
+        @media (max-width: 640px) {
+            .grid-cols-custom { grid-template-columns: repeat(1, 1fr); }
+            .header-content { padding: 1.5rem; }
+        }
+
+        @media (min-width: 641px) {
+            .grid-cols-custom { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (min-width: 1024px) {
+            .grid-cols-custom { grid-template-columns: repeat(3, 1fr); }
+        }
+
+        @media (min-width: 1280px) {
+            .grid-cols-custom { grid-template-columns: repeat(4, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Splash Screen -->
+    <div id="splash-screen">
+        <div class="loader-logo milano-font">MILANO</div>
+        <div class="mt-4 text-[9px] uppercase tracking-[6px] text-gray-500 font-bold">Zövqün Rəqəmsal Məkanı</div>
+    </div>
+
+    <div class="bg-overlay"></div>
+    <div class="aurora-container">
+        <div class="aurora-sphere"></div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="fixed top-8 left-1/2 -translate-x-1/2 z-[3000] hidden">
+        <div class="bg-gold text-black px-8 py-3 rounded-full font-bold shadow-2xl flex items-center gap-3 animate__animated animate__fadeInDown">
+            <i class="fa fa-check-circle"></i>
+            <span id="toast-msg">Səbətə əlavə olundu</span>
+        </div>
+    </div>
+
+    <!-- Main Header -->
+    <header class="sticky top-0 z-[1000] border-b border-white/5 bg-black/40 backdrop-blur-xl">
+        <div class="max-w-7xl mx-auto px-6 py-6 flex justify-between items-center header-content">
+            <div class="cursor-pointer" onclick="window.location.reload()">
+                <h1 class="milano-font text-2xl md:text-4xl tracking-[0.4em] text-[#c2a35d]">MILANO</h1>
+                <p class="text-[7px] md:text-[8px] uppercase tracking-[5px] text-gray-500 font-black italic">The Ultimate Clubbing Experience</p>
+            </div>
+            
+            <div class="flex items-center gap-4">
+                <button onclick="toggleSearch()" class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-all">
+                    <i class="fa fa-search text-sm"></i>
+                </button>
+                <button onclick="toggleCart()" class="relative w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-gold">
+                    <i class="fa fa-shopping-bag text-sm"></i>
+                    <span id="cart-count-badge" class="absolute -top-1 -right-1 bg-white text-black text-[9px] w-5 h-5 rounded-full flex items-center justify-center font-black hidden">0</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Dynamic Search Bar -->
+        <div id="search-container" class="hidden px-6 pb-6 max-w-3xl mx-auto animate__animated animate__fadeIn">
+            <input type="text" id="searchInput" onkeyup="handleSearch()" placeholder="İçki, qəlyan və ya brend axtar..." 
+                   class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl outline-none focus:border-gold text-white tracking-widest text-xs transition-all">
+        </div>
+
+        <!-- Scrollable Categories -->
+        <nav id="category-nav" class="px-6 py-4 flex gap-2 overflow-x-auto no-scrollbar border-t border-white/5 bg-black/20">
+            <!-- Dynamic Categories -->
+        </nav>
+    </header>
+
+    <!-- Content Grid -->
+    <main id="product-grid" class="p-6 grid grid-cols-custom gap-8 max-w-[1600px] mx-auto min-h-screen">
+        <!-- Loader Skeletons -->
+        <div class="h-80 glass-card animate-pulse"></div>
+        <div class="h-80 glass-card animate-pulse"></div>
+        <div class="h-80 glass-card animate-pulse"></div>
+        <div class="h-80 glass-card animate-pulse"></div>
+    </main>
+
+    <!-- Product Details Modal -->
+    <div id="item-modal" class="fixed inset-0 hidden bg-black/95 backdrop-blur-3xl z-[3000] flex items-center justify-center p-4" onclick="closeOnOverlay(event)">
+        <div class="glass-card w-full max-w-2xl overflow-hidden animate__animated animate__zoomIn" id="modal-body">
+            <div class="relative h-72 md:h-96">
+                <img id="modal-img" src="" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent"></div>
+                <button onclick="closeModal()" class="absolute top-6 right-6 w-12 h-12 bg-black/50 backdrop-blur-lg rounded-full border border-white/10 flex items-center justify-center text-white">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+            <div class="p-8 md:p-12">
+                <div class="flex flex-col md:flex-row justify-between items-start gap-4 mb-6">
+                    <div>
+                        <h2 id="modal-title" class="milano-font text-3xl md:text-4xl text-gold mb-2"></h2>
+                        <span id="modal-cat" class="text-[10px] uppercase tracking-[4px] text-gray-500 font-bold"></span>
+                    </div>
+                    <div id="modal-price" class="text-2xl md:text-3xl font-black italic text-white"></div>
+                </div>
+                <p id="modal-desc" class="text-gray-400 text-sm md:text-base leading-relaxed italic mb-10"></p>
+                <div class="flex gap-4">
+                    <button id="modal-add-btn" class="btn-gold flex-1 py-5 rounded-2xl flex items-center justify-center gap-3">
+                        <i class="fa fa-plus"></i> SƏBƏTƏ ƏLAVƏ ET
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cart Bottom Sheet -->
+    <div id="cart-panel">
+        <div class="p-8 h-full flex flex-col">
+            <div class="w-16 h-1.5 bg-white/10 mx-auto mb-8 rounded-full cursor-pointer" onclick="toggleCart()"></div>
+            
+            <div class="flex justify-between items-end mb-8">
+                <div>
+                    <h3 class="milano-font text-2xl text-gold tracking-widest">SİZİN SEÇİM</h3>
+                    <p class="text-[9px] text-gray-500 font-bold uppercase tracking-widest mt-1">Lüks menyu təcrübəsi</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-[10px] text-gray-500 uppercase font-black mb-1">Ümumi Məbləğ</p>
+                    <p id="total-val" class="text-3xl font-black text-white">0.00 AZN</p>
+                </div>
+            </div>
+
+            <div id="cart-items" class="flex-1 overflow-y-auto no-scrollbar space-y-4 pr-2">
+                <!-- Cart Items -->
+            </div>
+
+            <div class="pt-8 mt-4 border-t border-white/5">
+                <button onclick="checkout()" class="btn-gold w-full py-5 rounded-2xl flex items-center justify-center gap-4 text-sm">
+                    <i class="fab fa-whatsapp text-lg"></i>
+                    SİFARİŞİ WHATSAPP-A GÖNDƏR
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Sticky Cart Toggle -->
+    <div id="floating-cart" class="fixed bottom-8 left-1/2 -translate-x-1/2 z-[500] hidden">
+        <button onclick="toggleCart()" class="btn-gold px-10 py-4 rounded-full flex items-center gap-4 shadow-[0_15px_40px_rgba(194,163,93,0.4)]">
+            <div class="relative">
+                <i class="fa fa-shopping-bag text-lg"></i>
+                <span id="float-qty" class="absolute -top-3 -right-3 bg-white text-black text-[10px] w-6 h-6 rounded-full flex items-center justify-center font-black border-2 border-black">0</span>
+            </div>
+            <span class="text-[10px] font-black uppercase tracking-widest">Səbəti İdarə Et</span>
+        </button>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        const MENU_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTgI7X3Io2ffoNMsdwuKoSVgr7seCPLHAePBU1YhcXOiWMtspYbTYiWkoZt0--c925H098oO70NSMFF/pub?output=csv';
+        const CAT_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQNO38eKKrORlGKQ6nFHjnloiJ2L9Muy_Gw80beDYLDYTJhArKPBCaLQGPlJDDMEegehKPKex3M3kDp/pub?output=csv';
+        const CONTACT_NUMBER = '994503334455'; // Nümunə nömrə
+
+        let products = [], categories = [], cart = {}, activeCategory = "";
+
+        // Advanced CSV Parser
+        function parseCSV(text) {
+            const regex = /,(?=(?:(?:[^"]*"){2})*[^"]*$)/;
+            return text.split('\n')
+                       .filter(row => row.trim() !== "")
+                       .slice(1)
+                       .map(row => row.split(regex).map(c => c.trim().replace(/^"|"$/g, '')));
+        }
+
+        async function initializeApp() {
+            try {
+                const [cRes, mRes] = await Promise.all([fetch(CAT_CSV), fetch(MENU_CSV)]);
+                
+                categories = parseCSV(await cRes.text()).filter(r => r[1]);
+                products = parseCSV(await mRes.text()).map(col => ({
+                    id: col[0], 
+                    name: col[1], 
+                    desc: col[2], 
+                    cat: col[3], 
+                    price: parseFloat(col[4]) || 0, 
+                    curr: col[5] || 'AZN', 
+                    img: col[6], 
+                    status: col[7]
+                })).filter(p => p.status?.toLowerCase() === 'active');
+
+                // Load stored cart
+                const storedCart = localStorage.getItem('milano_elite_cart');
+                if(storedCart) cart = JSON.parse(storedCart);
+
+                renderCategories();
+                if(categories.length > 0) switchCategory(categories[0][1]);
+                updateCartUI();
+
+                // Remove Splash
+                setTimeout(() => {
+                    const splash = document.getElementById('splash-screen');
+                    splash.style.opacity = '0';
+                    setTimeout(() => splash.style.display = 'none', 1000);
+                }, 1500);
+
+            } catch (err) {
+                console.error("Critical System Failure:", err);
+                document.getElementById('product-grid').innerHTML = `
+                    <div class="col-span-full text-center py-20">
+                        <i class="fa fa-exclamation-triangle text-gold text-4xl mb-4"></i>
+                        <p class="text-gray-500 uppercase tracking-widest text-sm">Menyu yüklənərkən xəta baş verdi. Zəhmət olmasa interneti yoxlayın.</p>
+                    </div>
+                `;
+            }
+        }
+
+        function renderCategories() {
+            const nav = document.getElementById('category-nav');
+            nav.innerHTML = categories.map(c => `
+                <button onclick="switchCategory('${c[1]}')" class="nav-link ${activeCategory === c[1] ? 'active' : ''}">
+                    ${c[1]}
+                </button>
+            `).join('');
+        }
+
+        function switchCategory(catName) {
+            activeCategory = catName;
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.toggle('active', link.innerText === catName);
+            });
+            const filtered = products.filter(p => p.cat === catName);
+            renderProducts(filtered);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function renderProducts(items) {
+            const grid = document.getElementById('product-grid');
+            if(items.length === 0) {
+                grid.innerHTML = `<div class="col-span-full text-center py-20 text-gray-600 uppercase tracking-widest italic text-xs">Bu kateqoriyada məhsul yoxdur</div>`;
+                return;
+            }
+
+            grid.innerHTML = items.map((p, index) => {
+                const img = (p.img && p.img.length > 5) ? p.img : 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=800';
+                return `
+                <div class="glass-card p-5 flex flex-col group animate__animated animate__fadeInUp" style="animation-delay: ${index * 0.1}s">
+                    <div class="img-container mb-6 cursor-pointer" onclick="openProduct('${p.id}')">
+                        <img src="${img}" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=800'">
+                        <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-all"></div>
+                        <div class="absolute bottom-4 right-4 w-10 h-10 bg-black/60 backdrop-blur-md rounded-full border border-white/10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all translate-y-2 group-hover:translate-y-0">
+                            <i class="fa fa-expand text-xs"></i>
+                        </div>
+                    </div>
+                    <div class="flex-1 flex flex-col">
+                        <h3 class="milano-font text-sm font-bold tracking-widest mb-2 text-white group-hover:text-gold transition-colors line-clamp-1">${p.name}</h3>
+                        <p class="text-[10px] text-gray-500 italic mb-6 line-clamp-2">${p.desc || 'Exclusive choice for Milano Club.'}</p>
+                        <div class="mt-auto flex justify-between items-center">
+                            <span class="text-lg font-black price-tag">${p.price} ${p.curr}</span>
+                            <button onclick="addToCart('${p.id}')" class="w-12 h-12 rounded-full border border-gold/20 flex items-center justify-center text-gold hover:bg-gold hover:text-black transition-all">
+                                <i class="fa fa-plus text-xs"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function openProduct(id) {
+            const p = products.find(x => x.id == id);
+            if(!p) return;
+
+            const modal = document.getElementById('item-modal');
+            document.getElementById('modal-img').src = p.img || 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=800';
+            document.getElementById('modal-title').innerText = p.name;
+            document.getElementById('modal-cat').innerText = p.cat;
+            document.getElementById('modal-desc').innerText = p.desc || 'Bu məhsul xüsusi olaraq Milano Club müştəriləri üçün seçilmişdir.';
+            document.getElementById('modal-price').innerText = `${p.price} ${p.curr}`;
+            
+            document.getElementById('modal-add-btn').onclick = () => { 
+                addToCart(id); 
+                closeModal(); 
+            };
+
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('item-modal');
+            const body = document.getElementById('modal-body');
+            body.classList.remove('animate__zoomIn');
+            body.classList.add('animate__zoomOut');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                body.classList.remove('animate__zoomOut');
+                body.classList.add('animate__zoomIn');
+                document.body.style.overflow = '';
+            }, 300);
+        }
+
+        function closeOnOverlay(e) {
+            if(e.target.id === 'item-modal') closeModal();
+        }
+
+        function addToCart(id) {
+            cart[id] = (cart[id] || 0) + 1;
+            localStorage.setItem('milano_elite_cart', JSON.stringify(cart));
+            updateCartUI();
+            showToast("Səbətə əlavə olundu");
+            if(window.navigator.vibrate) window.navigator.vibrate(30);
+        }
+
+        function updateCartUI() {
+            let total = 0, count = 0, html = '';
+            
+            Object.keys(cart).forEach(id => {
+                const p = products.find(x => x.id == id);
+                if(!p) return;
+                
+                const subtotal = p.price * cart[id];
+                total += subtotal;
+                count += cart[id];
+                
+                html += `
+                    <div class="flex justify-between items-center p-4 glass-card bg-white/[0.02] border-white/5 animate__animated animate__fadeIn">
+                        <div class="flex items-center gap-4">
+                            <img src="${p.img || 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=200'}" class="w-14 h-14 rounded-2xl object-cover">
+                            <div>
+                                <p class="text-[10px] font-bold uppercase tracking-widest text-white truncate w-32">${p.name}</p>
+                                <p class="text-gold font-bold text-xs">${subtotal.toFixed(2)} AZN</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-4 bg-black/50 p-2 rounded-xl border border-white/10">
+                            <button onclick="modQty('${id}', -1)" class="text-gray-500 hover:text-white transition-colors"><i class="fa fa-minus-circle"></i></button>
+                            <span class="text-xs font-black w-4 text-center">${cart[id]}</span>
+                            <button onclick="modQty('${id}', 1)" class="text-gold"><i class="fa fa-plus-circle"></i></button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            const cartContainer = document.getElementById('cart-items');
+            cartContainer.innerHTML = html || `
+                <div class="h-full flex flex-col items-center justify-center text-gray-700 opacity-40">
+                    <i class="fa fa-shopping-basket text-6xl mb-4"></i>
+                    <p class="uppercase tracking-[5px] text-[10px] font-bold">Səbətiniz boşdur</p>
+                </div>
+            `;
+
+            document.getElementById('total-val').innerText = total.toFixed(2) + " AZN";
+            document.getElementById('cart-count-badge').innerText = count;
+            document.getElementById('float-qty').innerText = count;
+            
+            document.getElementById('cart-count-badge').classList.toggle('hidden', count === 0);
+            document.getElementById('floating-cart').style.display = count > 0 ? 'block' : 'none';
+        }
+
+        function modQty(id, delta) {
+            cart[id] += delta;
+            if(cart[id] <= 0) delete cart[id];
+            localStorage.setItem('milano_elite_cart', JSON.stringify(cart));
+            updateCartUI();
+        }
+
+        function toggleCart() {
+            const panel = document.getElementById('cart-panel');
+            panel.classList.toggle('open');
+            document.body.style.overflow = panel.classList.contains('open') ? 'hidden' : '';
+        }
+
+        function toggleSearch() {
+            const container = document.getElementById('search-container');
+            container.classList.toggle('hidden');
+            if(!container.classList.contains('hidden')) document.getElementById('searchInput').focus();
+        }
+
+        function handleSearch() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            if(query.length < 1) {
+                switchCategory(activeCategory);
+                return;
+            }
+            const filtered = products.filter(p => 
+                p.name.toLowerCase().includes(query) || 
+                p.cat.toLowerCase().includes(query) ||
+                (p.desc && p.desc.toLowerCase().includes(query))
+            );
+            renderProducts(filtered);
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-msg').innerText = msg;
+            toast.classList.remove('hidden');
+            setTimeout(() => toast.classList.add('hidden'), 2500);
+        }
+
+        function checkout() {
+            if(Object.keys(cart).length === 0) return;
+
+            let message = "*⚜️ MILANO CLUB - YENİ SİFARİŞ ⚜️*%0A%0A";
+            Object.keys(cart).forEach(id => {
+                const p = products.find(x => x.id == id);
+                if(p) message += `• *${p.name}* (x${cart[id]}) - ${(p.price * cart[id]).toFixed(2)} AZN%0A`;
+            });
+            message += `%0A💰 *ÜMUMİ MƏBLƏĞ: ${document.getElementById('total-val').innerText}*`;
+            message += `%0A📍 _Məkan: Milano Club Baku_`;
+            
+            window.open(`https://wa.me/${CONTACT_NUMBER}?text=${message}`);
+        }
+
+        // Initialize App
+        window.onload = initializeApp;
+
+    </script>
+</body>
+</html>
